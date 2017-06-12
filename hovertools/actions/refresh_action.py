@@ -15,21 +15,29 @@
 import os
 import yaml
 import logging
-
+from hovertools.managers.docker_manager import DockerManager
 
 logger = logging.getLogger(__name__)
 
 
-def do_register(ctx, filename):
+def do_refresh(ctx, name):
     """"
-    Registers a new yaml file.
+    Refreshes a docker instance by name
     """
+    yaml_doc = None
+
     try:
         repo_dir = ctx.obj['repo']
+        filename = os.path.join(repo_dir, name+'.yaml')
         with open(filename, 'r') as fin:
-            document = yaml.safe_load(fin)
-            new_file_path = os.path.join(repo_dir, document['name']+'.yaml')
-            with open(new_file_path, 'w') as fout:
-                yaml.dump(document, fout)
+            yaml_doc = yaml.safe_load(fin)
     except yaml.YAMLError as e:
         raise Exception("Error in configuration file: {0}".format(e))
+
+    print(yaml_doc)
+    docker_manager = DockerManager(image_name=yaml_doc['image'], 
+                                   container_name=yaml_doc['name'],
+                                   environment=yaml_doc['environment'],
+                                   ports=yaml_doc['ports'])
+
+    docker_manager.refresh()

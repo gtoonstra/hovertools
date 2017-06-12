@@ -19,6 +19,7 @@ import shutil
 import logging
 from hovertools import command_line
 from .config import TMP_REPO_DIR
+from hovertools.utils import ensure_repo_exists
 
 
 sys.exit = lambda *x: None
@@ -27,14 +28,12 @@ root = logging.getLogger()
 root.setLevel(logging.INFO)
 
 
-TMP_REPO_DIR = 'tmp'
-
-
-class TestRegister(unittest.TestCase):
+class TestRefresh(unittest.TestCase):
     def setUp(self):
-        super(TestRegister, self).setUp()
-        if os.path.exists(TMP_REPO_DIR):
-            shutil.rmtree(TMP_REPO_DIR)
+        super(TestRefresh, self).setUp()
+        ensure_repo_exists(TMP_REPO_DIR)
+        shutil.copyfile(os.path.join('tests/testdata/simple.yaml'), 
+                        os.path.join(TMP_REPO_DIR, 'mysql_hook_test.yaml'))
 
-    def test_load_simple(self):
-        command_line.cli(['--repo', TMP_REPO_DIR, 'register', 'tests/testdata/simple.yaml'])
+    def test_refresh_simple(self):
+        command_line.cli(['--repo', TMP_REPO_DIR, 'refresh', 'mysql_hook_test'])

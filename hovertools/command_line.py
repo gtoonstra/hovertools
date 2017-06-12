@@ -17,6 +17,7 @@ import sys
 import click
 import logging
 from hovertools.actions import register_action
+from hovertools.actions import refresh_action
 from hovertools.utils import ensure_repo_exists
 
 
@@ -54,17 +55,20 @@ def cli(ctx, repo):
 @click.argument('filename')
 @click.pass_context
 def register(ctx, filename):
-    logger.info('Registering a new docker image')
+    logger.info('Registering a new docker instance configuration')
     register_action.do_register(ctx, filename)
 
 
 @click.command()
-def dropdb():
-    click.echo('Dropped the database')
+@click.argument('name')
+@click.pass_context
+def refresh(ctx, name):
+    logger.info('Refreshing a docker instance by name')
+    refresh_action.do_refresh(ctx, name)
 
 
 cli.add_command(register)
-cli.add_command(dropdb)
+cli.add_command(refresh)
 
 
 if __name__ == '__main__':

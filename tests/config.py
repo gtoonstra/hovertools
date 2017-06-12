@@ -12,24 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-import yaml
-import logging
-
-
-logger = logging.getLogger(__name__)
-
-
-def do_register(ctx, filename):
-    """"
-    Registers a new yaml file.
-    """
-    try:
-        repo_dir = ctx.obj['repo']
-        with open(filename, 'r') as fin:
-            document = yaml.safe_load(fin)
-            new_file_path = os.path.join(repo_dir, document['name']+'.yaml')
-            with open(new_file_path, 'w') as fout:
-                yaml.dump(document, fout)
-    except yaml.YAMLError as e:
-        raise Exception("Error in configuration file: {0}".format(e))
+TMP_REPO_DIR = 'tmp'
