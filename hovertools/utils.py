@@ -11,3 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+import os
+
+
+def ensure_repo_exists(directory):
+    if not os.path.exists(directory):
+        os.makedirs(directory)

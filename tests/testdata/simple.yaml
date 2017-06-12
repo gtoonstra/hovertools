@@ -1,0 +1,8 @@
+# A very simple YAML document
+
+name:  mysql_hook_test
+image: mysql:8.0
+environment:
+  - MYSQL_ROOT_PASSWORD: secret
+ports:
+  - 3306/tcp: 6604
