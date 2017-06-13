@@ -34,10 +34,9 @@ def do_refresh(ctx, name):
     except yaml.YAMLError as e:
         raise Exception("Error in configuration file: {0}".format(e))
 
-    print(yaml_doc)
     docker_manager = DockerManager(image_name=yaml_doc['image'], 
                                    container_name=yaml_doc['name'],
                                    environment=yaml_doc['environment'],
                                    ports=yaml_doc['ports'])
-
+    logger.info("Refreshing")
     docker_manager.refresh()

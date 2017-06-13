@@ -27,9 +27,6 @@ root = logging.getLogger()
 root.setLevel(logging.INFO)
 
 
-TMP_REPO_DIR = 'tmp'
-
-
 class TestRegister(unittest.TestCase):
     def setUp(self):
         super(TestRegister, self).setUp()

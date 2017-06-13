@@ -19,8 +19,6 @@ import logging
 SECRET_PW = 'secret'
 FORMAT = '%(asctime)-15s %(message)s'
 
-logging.basicConfig(format=FORMAT, level=logging.INFO)
-
 
 class DockerManager(object):
     def __init__(self, image_name, container_name, environment, ports):
@@ -32,9 +30,9 @@ class DockerManager(object):
         self.ports = ports
 
     def stop_container(self):
-        container_list = self.client.containers.list()
+        container_list = self.client.containers.list(all=True)
         for container in container_list:
-            if container.attrs['Config']['Image'] == self.image_name:
+            if container.attrs['Name'][1:] == self.container_name:
                 self.logger.info("Stopping and removing {0}".format(container))
                 container.remove(force=True)
 
