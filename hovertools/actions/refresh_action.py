@@ -15,9 +15,38 @@
 import os
 import yaml
 import logging
+import shlex
+import subprocess
+import time
 from hovertools.managers.docker_manager import DockerManager
 
 logger = logging.getLogger(__name__)
+
+
+def check_running(cmd):
+    ctr = 0
+    success = False
+    while ctr < 12:
+        ret = subprocess.call(shlex.split(cmd, " "))
+        if ret != 0:
+            ctr += 1
+            time.sleep(5)
+        else:
+            success = True
+            break
+
+    if not success:
+        raise Exception("Could not bring up the container")
+
+
+def provision_system(script, env):
+    child_env = os.environ.copy()
+    for k,v in env.items():
+        child_env[k] = v
+    p = subprocess.Popen(script, env=child_env, shell=True)
+    p.wait()
+    if p.returncode != 0:
+        raise Exception("The provisioning script returned an error")
 
 
 def do_refresh(ctx, name):
@@ -40,3 +69,9 @@ def do_refresh(ctx, name):
                                    ports=yaml_doc['ports'])
     logger.info("Refreshing")
     docker_manager.refresh()
+
+    if 'uptest' in yaml_doc:
+        check_running(yaml_doc['uptest'])
+
+    if 'provisioning' in yaml_doc:
+        provision_system(yaml_doc['provisioning']['script'], yaml_doc['provisioning']['environment'])
