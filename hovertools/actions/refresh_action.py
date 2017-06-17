@@ -23,11 +23,16 @@ from hovertools.managers.docker_manager import DockerManager
 logger = logging.getLogger(__name__)
 
 
-def check_running(cmd):
+def check_running(script, env):
     ctr = 0
     success = False
+
+    child_env = os.environ.copy()
+    for k,v in env.items():
+        child_env[k] = v
+
     while ctr < 12:
-        ret = subprocess.call(shlex.split(cmd, " "))
+        ret = subprocess.call(shlex.split(script, " "))
         if ret != 0:
             ctr += 1
             time.sleep(5)
@@ -71,7 +76,7 @@ def do_refresh(ctx, name):
     docker_manager.refresh()
 
     if 'uptest' in yaml_doc:
-        check_running(yaml_doc['uptest'])
+        check_running(yaml_doc['uptest']['script'], yaml_doc['uptest']['environment'])
 
     if 'provisioning' in yaml_doc:
         provision_system(yaml_doc['provisioning']['script'], yaml_doc['provisioning']['environment'])
